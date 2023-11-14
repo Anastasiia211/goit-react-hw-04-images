@@ -9,13 +9,13 @@ import toast, { Toaster } from 'react-hot-toast';
 export const App = () => {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(12);
   const [imagesItems, setImagesItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, serError] = useState(false);
+  const [error, setError] = useState(false);
   const [loadMore,setLoadMore] =useState(false);
 
-
+  const perPage = 12;
+  
 useEffect(() => {
     if (query === '') {
       return;
@@ -24,7 +24,7 @@ useEffect(() => {
   async function addImage() {
             try {
               setLoading(true);
-              serError(false);
+              setError(false);
               const images = await searchImage(page, perPage, query);
               setImagesItems(prevState => [...prevState, ...images.hits]);
               setLoadMore(page < Math.ceil(images.totalHits / perPage));
@@ -32,10 +32,10 @@ useEffect(() => {
                     toast.error('There are no entries. Try again');
                 }
             } catch (error) {
-                serError(true);
+                setError(true);
             } finally {
                 setLoading(false);
-            }
+    }
   }
   
       addImage();
@@ -85,8 +85,8 @@ useEffect(() => {
 
         <Toaster position="top-right" />
       </>
-    );
-        };
+  );
+};
 
   
             
