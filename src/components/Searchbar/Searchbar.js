@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
 import { SearchForm, ErrMessage } from './Searchbar.styled';
@@ -9,9 +8,8 @@ const SignupSchema = Yup.object().shape({
     search: Yup.string().required('This fiels is empty. Write something'),
 });
 
-export class Searchbar extends Component {
-    render() {
-        return (
+export const Searchbar = ({onSubmit}) => {
+    return (
             <SearchForm>
                 <div className='wrapper'>
                     <Formik
@@ -20,7 +18,7 @@ export class Searchbar extends Component {
                         }}
                         validationSchema={SignupSchema}
                         onSubmit={(values, actions) => {
-                            this.props.onSubmit(values);
+                            onSubmit(values);
                         }}
                     >
                         <Form>
@@ -44,5 +42,4 @@ export class Searchbar extends Component {
                 </div>
             </SearchForm>
         );
-    }
-}
+};

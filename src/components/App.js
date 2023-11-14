@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect,useState } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { ColorRing } from 'react-loader-spinner';
@@ -6,77 +6,60 @@ import { searchImage } from 'api';
 import toast, { Toaster } from 'react-hot-toast';
 
 
-export class App extends Component {
-    state = {
-        query: '',
-        page: 1,
-        perPage: 12,
-        imagesItems: [],
-        loading: false,
-        error: false,
-        loadMore: false,
-    };
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [imagesItems, setImagesItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, serError] = useState(false);
+  const [loadMore,setLoadMore] =useState(false);
 
-    
-    async componentDidUpdate(prevProps, prevState) {
-        if (
-            prevState.query !== this.state.query ||
-            prevState.page !== this.state.page
-        ) {
+
+useEffect(() => {
+    if (query === '') {
+      return;
+  }
+  
+  async function addImage() {
             try {
-                this.setState({ loading: true, error: false });
-                const images = await searchImage(
-                    this.state.page,
-                    this.state.perPage,
-                    this.state.query
-                );
-
-                this.setState(prevState => {
-                    return {
-                        imagesItems: [...prevState.imagesItems, ...images.hits],
-                        loadMore:
-                            this.state.page <
-                            Math.ceil(images.totalHits / this.state.perPage),
-                    };
-                });
-            
+              setLoading(true);
+              serError(false);
+              const images = await searchImage(page, perPage, query);
+              setImagesItems(prevState => [...prevState, ...images.hits]);
+              setLoadMore(page < Math.ceil(images.totalHits / perPage));
                 if (images.hits < 1) {
                     toast.error('There are no entries. Try again');
                 }
             } catch (error) {
-                this.setState({ error: true });
+                serError(true);
             } finally {
-                this.setState({ loading: false });
+                setLoading(false);
             }
-        }
-    }
+  }
+  
+      addImage();
+  }, [page, query]);
     
-    handlerSubmit = evt => {
-    this.setState({
-      imagesItems: [],
-      query: evt.search,
-      page: 1,
-    });
-  };
+    const handlerSubmit = evt => {
+      setImagesItems([]);
+      setQuery(evt.search.trim());
+      setPage(1);
+    };
+  
 
-  handleLoadMore = () => {
-    this.setState(prevState => {
-      return {
-        page: prevState.page + 1,
-      };
-    });
-  };
+  const handleLoadMore = () => {
+    setPage(prevState => prevState + 1);
+    };
+    
 
-  render() {
-    console.log(this.state);
-    const { imagesItems } = this.state;
     return (
       <>
-        <Searchbar onSubmit={this.handlerSubmit} />
-        {this.state.imagesItems.length > 0 && (
+        <Searchbar onSubmit={handlerSubmit} />
+        {imagesItems.length > 0 && (
           <ImageGallery items={imagesItems} />
         )}
-        {this.state.loading && (
+        {loading && (
           <ColorRing
             visible={true}
             height="80"
@@ -88,12 +71,12 @@ export class App extends Component {
             />
         )}
 
-        {this.state.loadMore && (
+        {loadMore && (
           <div className="wrapper">
             <button
               type="button"
               className="btn btn-outline"
-              onClick={this.handleLoadMore}
+              onClick={handleLoadMore}
             >
               Load more
             </button>
@@ -103,8 +86,11 @@ export class App extends Component {
         <Toaster position="top-right" />
       </>
     );
-  }
-}
+        };
+
+  
+            
+        
   
             
         

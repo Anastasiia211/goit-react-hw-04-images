@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { BtnClose } from './ImageGalleryItem.styled';
 import { BsDoorClosed } from 'react-icons/bs';
 import Modal from 'react-modal';
@@ -16,38 +16,33 @@ const customStyles = {
 
 Modal.setAppElement('#root');
 
-export class ImageGalleryItem extends Component {
-    state = {
-        isModalOpen: false,
-    };
+export const ImageGalleryItem = ({ webformatURL, tags }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+    
 
-    openModal = () => {
-        this.setState({ isModalOpen: true });
-    };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
-    closeModal = () => {
-        this.setState({ isModalOpen: false });
-    };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-     render() {
-    const { webformatURL, tags } = this.props;
-    const { isModalOpen } = this.state;
 
-    return (
-      <>
-        <img src={webformatURL} alt={tags} onClick={this.openModal} />
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={this.closeModal}
-          style={customStyles}
-          contentLabel="Example Modal"
-        >
-          <img src={webformatURL} alt={tags} />
-          <BtnClose type="button" onClick={this.closeModal}>
-            <BsDoorClosed />
-          </BtnClose>
-        </Modal>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <img src={webformatURL} alt={tags} onClick={openModal} />
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel="Example Modal"
+      >
+        <img src={webformatURL} alt={tags} />
+        <BtnClose type="button" onClick={closeModal}>
+          <BsDoorClosed />
+        </BtnClose>
+      </Modal>
+    </>
+  );
+};
