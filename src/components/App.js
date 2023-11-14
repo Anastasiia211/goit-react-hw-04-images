@@ -56,6 +56,7 @@ useEffect(() => {
     return (
       <>
         <Searchbar onSubmit={handlerSubmit} />
+         {error && <p>Whoops! Error! Please reload this page!</p>}
         {imagesItems.length > 0 && (
           <ImageGallery items={imagesItems} />
         )}
